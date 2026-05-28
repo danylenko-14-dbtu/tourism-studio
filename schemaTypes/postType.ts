@@ -11,7 +11,8 @@ export const postType = defineType({
       name: 'title',
       title: 'Заголовок',
       type: 'string',
-      validation: (Rule) => Rule.required().max(100),
+      description: 'Рекомендована довжина 50–60 символів',
+      validation: (Rule) => Rule.required().min(40).max(60),
     }),
 
     defineField({
@@ -19,7 +20,7 @@ export const postType = defineType({
       type: 'slug',
       title: 'Slug',
       description:
-        'Унікальний ідентифікатор, використовується в URL. Генерується один раз з заголовка при створенні нового поста.',
+        'Унікальний ідентифікатор, використовується в URL. Рекомендовано використовувати англійську версію заголовка, замінюючи пробіли на дефіси.',
       options: {
         source: 'title',
         isUnique: (slug, context) => {
@@ -54,9 +55,8 @@ export const postType = defineType({
       title: 'Короткий опис',
       type: 'text',
       rows: 3,
-      description:
-        'Показується на картці поста і використовується як мета-description. 80–155 символів.',
-      validation: (Rule) => Rule.required().min(80).max(155),
+      description: 'Показується на картці поста і використовується як мета-опис. 110–155 символів.',
+      validation: (Rule) => Rule.required().min(110).max(155),
     }),
 
     defineField({
@@ -70,8 +70,7 @@ export const postType = defineType({
       name: 'mainImage',
       title: 'Головне зображення',
       type: 'image',
-      description:
-        'Рекомендований розмір 1200x630px. Відкрийте зображення для вибору "hotspot" для кращого кадрування',
+      description: 'Відкрийте зображення для вибору "hotspot" для кращого кадрування',
       options: {
         hotspot: true,
       },
