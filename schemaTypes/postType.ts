@@ -1,5 +1,11 @@
 import {DocumentTextIcon} from '@sanity/icons'
 import {defineArrayMember, defineField, defineType} from 'sanity'
+import {PostSlugInput} from './components/PostSlugInput'
+import {
+  getPostSlugSource,
+  isUniquePostSlugByLanguage,
+  validatePostSlugFormat,
+} from './utils/postSlug'
 
 export const postType = defineType({
   name: 'post',
@@ -22,32 +28,13 @@ export const postType = defineType({
       description:
         'Унікальний ідентифікатор, використовується в URL. Рекомендовано використовувати англійську версію заголовка, замінюючи пробіли на дефіси.',
       options: {
-        source: 'title',
-        isUnique: (slug, context) => {
-          const {document, getClient} = context
-          if (!document?.language) return true
-
-          // keep the same slug for the same document (e.g. when editing), but ensure it's unique across all documents with the same language
-          const id = document._id.replace(/^drafts\./, '')
-
-          const client = getClient({apiVersion: '2026-05-02'})
-          return client.fetch(
-            `!defined(*[
-          _type == "post" &&
-          slug.current == $slug &&
-          language == $language &&
-          _id != $id &&
-          _id != $draftId
-        ][0]._id)`,
-            {
-              slug,
-              language: document.language,
-              id,
-              draftId: `drafts.${id}`,
-            },
-          )
-        },
+        source: getPostSlugSource,
+        isUnique: isUniquePostSlugByLanguage,
       },
+      components: {
+        input: PostSlugInput,
+      },
+      validation: (Rule) => Rule.custom(validatePostSlugFormat),
     }),
 
     defineField({
